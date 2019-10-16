@@ -14,7 +14,7 @@ class UserProfileManager(BaseUserManager):
             raise ValueError('User NEEd email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email,name=name)
+        user = self.model(email=email,name=name,)
 
         user.set_password(password)
         user.save(using=self._db) #standard procedure to save objects in djangoproject
@@ -23,7 +23,7 @@ class UserProfileManager(BaseUserManager):
 
     def create_superuser(self,email,name,password):
         """create and save a superuser with given details"""
-        user = self.create_user(email,name,password)
+        user = self.create_user(email, name, password)
 
         user.is_superuser = True #PermissionsMixin creates the is_ automatically
         user.is_staff = True
@@ -34,7 +34,7 @@ class UserProfileManager(BaseUserManager):
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     """database model for users in the system"""
     email = models.EmailField(max_length=50,unique=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50,unique=True)
     #determine if user's profile is activated or not, by default its set to True
     is_active = models.BooleanField(default = True)
     #deterine if user is a staff user which means admin access or not, by default they are not members
@@ -43,7 +43,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELD = ['name'] #add all the other attributes AuthenticationMiddleware
+    REQUIRED_FIELDS = ['name'] #add all the other attributes AuthenticationMiddleware
 
     #functions for django to interact with custom user model
     def get_full_name(self):
